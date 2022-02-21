@@ -1,0 +1,38 @@
+{
+  "outputFile": "scenario.json",
+  "headerTemplateFile": {
+    "HTTP": "./templates/http-header-template.json"
+  },
+  "replace": {
+    "url": "http://localhost:8080"
+  },
+  "generate": [
+    "amount"
+  ],
+  "numOfScenarios": "2",
+  "interactions": [
+    {
+      "templateFile": "./templates/create-resource-template.json",
+      "numOfInteractions": "A positive integer. Default 1",
+      "technology": "To match an existing key in template file. Default HTTP.",
+      "replace": {
+        "branchCondition": "All {branchCondition} in template are replaced with this value",
+        "branch": "All {branch} in template are replaced with this value"
+      },
+      "generate": [
+        "uuid"
+      ]
+    },
+    {
+      "templateFile": "./templates/create-another-resource-template.json",
+      "replace": {
+        "twigs": "All {twigs} in template are replaced with this value"
+      },
+      "generate": [
+        "uuid",
+        "date",
+        "amount"
+      ]
+    }
+  ]
+}

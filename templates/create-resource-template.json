@@ -1,0 +1,16 @@
+{
+  "HTTP": {
+    "request": {
+      "path": "{url}/api/v1/resource/{branch}/{uuid}",
+      "method": "POST",
+      "body": {
+        "code": "{branchCondition}"
+      }
+    },
+    "response": {
+      "body": {
+      },
+      "statusCode": "200"
+    }
+  }
+}

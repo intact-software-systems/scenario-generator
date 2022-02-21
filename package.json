@@ -1,0 +1,31 @@
+{
+  "name": "scenario-generator",
+  "version": "1.0.0",
+  "description": "From input recipes generate json file containing HTTP requests and responses",
+  "type": "module",
+  "author": {
+    "name": "Intact Software Systems",
+    "email": "intact.software.systems@gmail.com"
+  },
+  "publishConfig": {
+    "registry": "https://"
+  },
+  "scripts": {
+    "test": "jest test/",
+    "start": "node scenario-generate.js --config test-data/input.json",
+    "start-flatten": "node scenario-flatten.js --scenario scenario.json"
+  },
+  "dependencies": {
+    "commander": "^9.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^27.5.1",
+    "@types/jest": "^27.4.0",
+    "jest": "^27.5.1"
+  },
+  "bin": {
+    "scenario-generate": "scenario-generate.js",
+    "scenario-flatten": "scenario-flatten.js"
+  }
+}
