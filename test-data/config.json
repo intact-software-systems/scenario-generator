@@ -4,7 +4,8 @@
     "HTTP": "./templates/http-header-template.json"
   },
   "replace": {
-    "url": "http://localhost:8080"
+    "url": "http://localhost:8080",
+    "company": "Intact"
   },
   "generate": [
     "amount"
@@ -13,11 +14,11 @@
   "interactions": [
     {
       "templateFile": "./templates/create-resource-template.json",
-      "numOfInteractions": "A positive integer. Default 1",
-      "technology": "To match an existing key in template file. Default HTTP.",
+      "numOfInteractions": "1",
+      "technology": "HTTP",
       "replace": {
-        "branchCondition": "All {branchCondition} in template are replaced with this value",
-        "branch": "All {branch} in template are replaced with this value"
+        "branchCondition": "Blossom",
+        "branch": "Fornebu"
       },
       "generate": [
         "uuid"
@@ -25,8 +26,9 @@
     },
     {
       "templateFile": "./templates/create-another-resource-template.json",
+      "technology": "HTTP",
       "replace": {
-        "twigs": "All {twigs} in template are replaced with this value"
+        "twigs": "humpdy"
       },
       "generate": [
         "uuid",

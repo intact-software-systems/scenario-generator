@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "jest test/",
-    "start": "node scenario-generate.js --config test-data/input.json",
+    "start": "node scenario-generate.js --config test-data/config.json",
     "start-flatten": "node scenario-flatten.js --scenario scenario.json"
   },
   "dependencies": {
