@@ -9,6 +9,8 @@
     },
     "response": {
       "body": {
+        "branch": "{branch}",
+        "resource": "{uuid}"
       },
       "statusCode": "200"
     }

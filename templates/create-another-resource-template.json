@@ -10,6 +10,10 @@
     },
     "response": {
       "body": {
+        "twigs": ["a", "b"],
+        "resources": {
+          "id": "{uuid}"
+        }
       },
       "statusCode": "200"
     }
