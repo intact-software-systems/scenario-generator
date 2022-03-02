@@ -19,7 +19,7 @@ function uuid() {
 }
 
 function generateReplace(generate, config) {
-    const generated = generate
+    const filtered = generate
         .map(value => {
             switch (value) {
                 case 'uuid':
@@ -53,7 +53,11 @@ function generateReplace(generate, config) {
             }
         })
         .filter(gen => gen !== undefined)
-        .reduce((a, b) => {
+
+
+    const generated = filtered.length === 0
+        ? {}
+        : filtered.reduce((a, b) => {
             return {...a, ...b}
         })
 
@@ -64,6 +68,31 @@ function generateReplace(generate, config) {
         }
     }
     return generated
+}
+
+function toReplaceGlobal(generate, replace) {
+    const defaultReplace = {
+        env: 'DEV',
+        sys: 'LED',
+        source: 'INT',
+        country: 'NO',
+        currency: 'NOK',
+        userID: 'aTestTool'
+    }
+
+    const generatedReplace = generateReplace(
+        generate,
+        {
+            ...defaultReplace,
+            ...replace
+        }
+    )
+
+    return {
+        ...defaultReplace,
+        ...replace,
+        ...generatedReplace
+    }
 }
 
 export default {
@@ -78,32 +107,13 @@ export default {
         return JSON.parse(readFileSync(filename))
     },
 
-    toReplace: input => {
-        const defaultReplace = {
-            env: 'DEV',
-            sys: 'APP',
-            source: 'APP',
-            country: 'NO',
-            currency: 'NOK',
-            userID: 'aTestTool'
-        }
-
-        const generatedReplace = generateReplace(
-            input.generate,
-            {
-                ...defaultReplace,
-                ...input.replace
-            }
-        )
-
-        return {
-            ...defaultReplace,
-            ...input.replace,
-            ...generatedReplace
-        }
+    toReplace: (generate, replace) => {
+        return toReplaceGlobal(generate || [], replace || {})
     },
 
-    generateReplace: (config, generate) => generateReplace(generate, config),
+    generateReplace: (generate, config) => {
+        return generateReplace(generate || [], config || {})
+    },
 
     flattenInputArray: array => array
         .reduce((a, b) => {
