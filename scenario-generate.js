@@ -23,6 +23,7 @@ const input = utils.openFile(program.opts().config)
 
 const requests = scenarios.createScenarios(input, input.numOfScenarios || 1)
 
-utils.saveToFile(input.outputFile, requests)
+const fileName = input.outputFile || 'scenario.json'
+utils.saveToFile(fileName, requests)
 
-console.log('Generated scenario to file ' + input.outputFile)
+console.log('Generated scenario to file ' + fileName)
