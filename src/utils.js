@@ -95,6 +95,36 @@ function toReplaceGlobal(generate, replace) {
     }
 }
 
+function inputOverridesToJson(input) {
+    if (!input || input.length <= 1) {
+        return {}
+    }
+
+    const values = input.split(',')
+    if (values.length <= 0) {
+        return {}
+    }
+
+    let resultJson = {}
+
+    for (let i = 0; i < values.length; i++) {
+
+        const obj = {}
+
+        const value = values[i].split('=')
+        if (value.length !== 2) {
+            console.warn('Ignoring overrides. Failed to parse overrides in input ' + input + ' Failed with ' + value)
+            return {}
+        }
+
+        obj[value[0]] = value[1]
+
+        resultJson = {...obj, ...resultJson}
+    }
+
+    return resultJson
+}
+
 export default {
     saveToFile: (fileName, data) => {
         writeFile(fileName, JSON.stringify(data, null, 2), 'utf8', (err) => {
@@ -127,5 +157,7 @@ export default {
                 return [a, ...b]
             }
             return [a, b]
-        })
+        }),
+
+    inputOverridesToJson: csv => inputOverridesToJson(csv)
 }

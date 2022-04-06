@@ -9,17 +9,26 @@ const program = new Command()
 
 program
     .requiredOption('-c, --config <config>', 'Config file in json format')
+    .option('-o, --override <override>', 'Override global replace tags. Example: tag1=value,tag2=value . No space in string')
 
 program.on('-h, --help', () => {
     console.log('')
     console.log('Example calls:')
     console.log('  $ scenario-generate --config config.json')
     console.log('  $ scenario-generate -c config.json')
+
+    console.log('  $ scenario-generate --config config.json --override url=http://localhost:8080/led/api/v1,valuDate=2022-10-01')
+    console.log('  $ scenario-generate -c config.json -o url=http://localhost:8080/led/api/v1,valuDate=2022-10-01')
 })
 
 program.parse(process.argv)
 
 const input = utils.openFile(program.opts().config)
+
+input.replace = {
+    ...input.replace,
+    ...(utils.inputOverridesToJson(program.opts().override))
+}
 
 const requests = scenarios.createScenarios(input, input.numOfScenarios || 1)
 
