@@ -50,7 +50,7 @@ where config can have these properties with examples:
   "replace": {
     "url": "http://localhost:8080"
   },
-  "generate": [
+  "generateForEach": [
     "amount"
   ],
   "numOfScenarios": "2",
@@ -63,7 +63,7 @@ where config can have these properties with examples:
         "branchCondition": "All {branchCondition} in template are replaced with this value",
         "branch": "All {branch} in template are replaced with this value"
       },
-      "generate": [
+      "generateForEach": [
         "uuid"
       ]
     },
@@ -72,7 +72,7 @@ where config can have these properties with examples:
       "replace": {
         "twigs": "All {twigs} in template are replaced with this value"
       },
-      "generate": [
+      "generateForEach": [
         "uuid",
         "date",
         "amount"
