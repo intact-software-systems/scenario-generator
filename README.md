@@ -56,6 +56,7 @@ where config can have these properties with examples:
   "numOfScenarios": "2",
   "interactions": [
     {
+      "entryName": "createResource",
       "templateFile": "./templates/create-resource-template.json",
       "numOfInteractions": "A positive integer. Default 1",
       "technology": "To match an existing key in template file. Default HTTP.",
@@ -68,6 +69,7 @@ where config can have these properties with examples:
       ]
     },
     {
+      "entryName": "createAnotherResource",
       "templateFile": "./templates/create-another-resource-template.json",
       "replace": {
         "twigs": "All {twigs} in template are replaced with this value"
