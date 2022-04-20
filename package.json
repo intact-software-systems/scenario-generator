@@ -4,12 +4,22 @@
   "description": "From input recipes generate json file containing HTTP requests and responses",
   "type": "module",
   "author": {
-    "name": "Intact Software Systems",
+    "name": "Knut-Helge Vik",
     "email": "intact.software.systems@gmail.com"
   },
-  "publishConfig": {
-    "registry": "https://"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/intact-software-systems/scenario-generator.git"
   },
+  "keywords": [
+    "test",
+    "black-box",
+    "generator"
+  ],
+  "bugs": {
+    "url": "https://github.com/intact-software-systems/scenario-generator/issues"
+  },
+  "homepage": "https://github.com/intact-software-systems/scenario-generator#readme",
   "scripts": {
     "test": "jest test/",
     "start": "node scenario-generate.js --config test-data/config.json",
