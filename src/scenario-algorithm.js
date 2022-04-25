@@ -58,7 +58,12 @@ function toInteraction(input) {
 
     Object.keys(input.responseTemplate)
         .forEach(key => {
-            interaction.response[key] = replaceData(JSON.stringify(input.responseTemplate[key]), input.replace)
+            if (input.generateAlways) {
+                interaction.response[key] = replaceAlways(JSON.stringify(input.responseTemplate[key]), input.replace, input.generateAlways)
+            }
+            else {
+                interaction.response[key] = replaceData(JSON.stringify(input.responseTemplate[key]), input.replace)
+            }
         })
 
     return {
