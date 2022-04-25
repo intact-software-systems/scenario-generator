@@ -14,6 +14,45 @@ function replaceData(target, config) {
     return JSON.parse(returnTarget)
 }
 
+function toInteractionRuleRange(key, value, maxNumber) {
+    if (key.startsWith('>')) {
+        return [Number.parseInt(key.replace('>', '')), Number.parseInt(maxNumber)]
+    }
+
+    if (key.includes('-')) {
+        const numbers = key.split('-')
+        if (numbers[0] > numbers[1]) {
+            throw 'Invalid number range: ' + key
+        }
+
+        return [Number.parseInt(numbers[0]), Number.parseInt(numbers[1])]
+    }
+
+    const number = Number.parseInt(key)
+    if (number) {
+        return [number, number]
+    }
+
+    return [0, 0]
+}
+
+
+function toInteractionReplaceRule(interactionReplaceRules, i, numOfInteractions) {
+    let entries = Object.entries(interactionReplaceRules || {})
+    if (entries.length <= 0) {
+        return {}
+    }
+
+    return entries
+        .filter(([key, value]) => {
+            const range = toInteractionRuleRange(key, value, numOfInteractions)
+            return range[0] <= i && range[1] >= i
+        })
+        .map(([key, value]) => {
+            return value
+        })[0] || {}
+}
+
 function replaceAlways(target, replace, generateAlways) {
     const config = {
         ...replace,
@@ -73,17 +112,30 @@ function toInteraction(input) {
     }
 }
 
-function toInteractions(input, numInteractions) {
+function toInteractions(input, numOfInteractions) {
     const interactions = []
 
-    for (let i = 0; i < numInteractions; i++) {
-        if (input.generateForEach) {
-            const generated = utils.generateReplace(input.generateForEach, input.replace)
-            input.replace = {
-                ...input.replace,
-                ...generated
-            }
+    for (let i = 1; i < numOfInteractions + 1; i++) {
+        const interactionReplaceRule = toInteractionReplaceRule(input.interactionReplaceRules, i, numOfInteractions)
+
+        input.generateForEach = {
+            ...input.generateForEach,
+            ...interactionReplaceRule?.generateForEach
         }
+
+        input.generateAlways = {
+            ...input.generateAlways,
+            ...interactionReplaceRule?.generateAlways
+        }
+
+        const generated = utils.generateReplace(input.generateForEach, input.replace)
+
+        input.replace = {
+            ...input.replace,
+            ...generated,
+            ...interactionReplaceRule?.replace
+        }
+
         interactions.push(toInteraction(input))
     }
 
@@ -141,10 +193,13 @@ function toGenerateAlways(inputGenerateAlways, interactionGenerateAlways) {
     ]
 }
 
+
 function toScenario(input, globalReplace) {
     return input.interactions
         .map(interaction => {
             const interactionTemplate = toInteractionTemplate(interaction)
+
+            const numOfInteractions = interaction.numOfInteractions || 1
 
             return toInteractions(
                 {
@@ -152,6 +207,7 @@ function toScenario(input, globalReplace) {
                         ...globalReplace,
                         ...interaction?.replace
                     },
+                    interactionReplaceRules: interaction.interactionReplaceRules,
                     technology: toTechnology(interaction.technology),
                     generateForEach: interaction.generateForEach,
                     generateAlways: toGenerateAlways(input.generateAlways, interaction.generateAlways),
@@ -167,7 +223,7 @@ function toScenario(input, globalReplace) {
                         ...toResponse(interactionTemplate.response)
                     }
                 },
-                interaction.numOfInteractions || 1
+                numOfInteractions
             )
         })
 }

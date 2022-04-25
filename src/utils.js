@@ -142,6 +142,9 @@ export default {
     },
 
     generateReplace: (generate, config) => {
+        if(!generate.length) {
+            return []
+        }
         return generateReplace(generate || [], config || {})
     },
 

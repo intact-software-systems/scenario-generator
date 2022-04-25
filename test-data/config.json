@@ -7,20 +7,46 @@
     "url": "http://localhost:8080",
     "company": "Intact"
   },
-  "generate": [
+  "generateForEach": [
     "amount"
   ],
   "numOfScenarios": "2",
   "interactions": [
     {
       "templateFile": "./templates/create-resource-template.json",
-      "numOfInteractions": "1",
+      "numOfInteractions": "10",
       "technology": "HTTP",
       "replace": {
         "branchCondition": "Blossom",
         "branch": "Fornebu"
       },
-      "generate": [
+      "interactionReplaceRules": {
+        "1": {
+          "replace": {
+            "amount": "1000"
+          },
+          "generateForEach": [],
+          "generateAlways": [],
+          "replaceTypesForEach": [],
+          "generateTypesForEach": []
+        },
+        "2": {
+          "replace": {
+            "amount": "1002"
+          }
+        },
+        "3-5": {
+          "replace": {
+            "amount": "1003"
+          }
+        },
+        ">5": {
+          "replace": {
+            "amount": "1001"
+          }
+        }
+      },
+      "generateAlways": [
         "uuid"
       ]
     },
@@ -30,7 +56,7 @@
       "replace": {
         "twigs": "humpdy"
       },
-      "generate": [
+      "generateForEach": [
         "uuid",
         "date",
         "amount"
