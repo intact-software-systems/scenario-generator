@@ -6,3 +6,11 @@ Introduce typed replacement arguments
   "name": "iban2"
 }
 ```
+
+Introduce working directory
+
+```json
+{
+  "workingDirectory": "./root/of/data"
+}
+```
