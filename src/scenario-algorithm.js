@@ -118,15 +118,15 @@ function toInteractions(input, numOfInteractions) {
     for (let i = 1; i < numOfInteractions + 1; i++) {
         const interactionReplaceRule = toInteractionReplaceRule(input.interactionReplaceRules, i, numOfInteractions)
 
-        input.generateForEach = {
-            ...input.generateForEach,
-            ...interactionReplaceRule?.generateForEach
-        }
+        input.generateForEach = [
+            ...(input.generateForEach ? input.generateForEach : []),
+            ...(interactionReplaceRule.generateForEach ? interactionReplaceRule.generateForEach : [])
+        ]
 
-        input.generateAlways = {
-            ...input.generateAlways,
-            ...interactionReplaceRule?.generateAlways
-        }
+        input.generateAlways = [
+            ...(input.generateAlways ? input.generateAlways : []),
+            ...(interactionReplaceRule.generateAlways ? interactionReplaceRule.generateAlways : [])
+        ]
 
         const generated = utils.generateReplace(input.generateForEach, input.replace)
 
@@ -209,7 +209,7 @@ function toScenario(input, globalReplace) {
                     },
                     interactionReplaceRules: interaction.interactionReplaceRules,
                     technology: toTechnology(interaction.technology),
-                    generateForEach: interaction.generateForEach,
+                    generateForEach: interaction.generateForEach || [],
                     generateAlways: toGenerateAlways(input.generateAlways, interaction.generateAlways),
                     requestTemplate: {
                         ...toRequest(interactionTemplate.request),
