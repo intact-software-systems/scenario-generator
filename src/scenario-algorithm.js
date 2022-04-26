@@ -1,4 +1,5 @@
 import utils from './utils.js'
+import typeGenerators from './type-generators.js'
 
 function toTechnology(technology) {
     return technology || 'HTTP'
@@ -14,7 +15,7 @@ function replaceData(target, config) {
     return JSON.parse(returnTarget)
 }
 
-function toInteractionRuleRange(key, value, maxNumber) {
+function toRuleRange(key, maxNumber) {
     if (key.startsWith('>')) {
         return [Number.parseInt(key.replace('>', '')), Number.parseInt(maxNumber)]
     }
@@ -36,16 +37,15 @@ function toInteractionRuleRange(key, value, maxNumber) {
     return [0, 0]
 }
 
-
-function toInteractionReplaceRule(interactionReplaceRules, i, numOfInteractions) {
-    let entries = Object.entries(interactionReplaceRules || {})
+function findReplaceRule(replaceRules, i, numOf) {
+    let entries = Object.entries(replaceRules || {})
     if (entries.length <= 0) {
         return {}
     }
 
     return entries
         .filter(([key, value]) => {
-            const range = toInteractionRuleRange(key, value, numOfInteractions)
+            const range = toRuleRange(key, numOf)
             return range[0] <= i && range[1] >= i
         })
         .map(([key, value]) => {
@@ -112,28 +112,125 @@ function toInteraction(input) {
     }
 }
 
+function findGeneratedConstant(generateConstants, key, i) {
+    if (!generateConstants.length) {
+        return undefined
+    }
+
+    const constant = generateConstants.find(c => c.constant === key)
+    if (!constant) {
+        return undefined
+    }
+
+    if (constant.generated.length < i + 1) {
+        return undefined
+    }
+
+    return constant.generated[i + 1]
+}
+
+function toArrayPosition(value) {
+    const start = value.indexOf('[') //?
+    const end = value.indexOf(']') //?
+
+    return value.substring(start + 1, end) //?
+}
+
+function toFilteredObject(replace, matcher) {
+    let entries = Object.entries(replace || {})
+    if (entries.length <= 0) {
+        return {}
+    }
+
+    let filtered = entries
+        .filter(([key, value]) => matcher(value))
+        .map(([key, value]) => {
+            return {
+                [key]: value
+            }
+        })
+
+    return filtered.length === 0
+        ? {}
+        : filtered.reduce((a, b) => {
+            return {...a, ...b}
+        })
+}
+
+function toReplaceEntriesToInject(replace) {
+    return toFilteredObject(
+        replace,
+        value => value.match('^[$][{].*.}$')
+    )
+}
+
+function toReplaceEntriesToNotInject(replace) {
+    return toFilteredObject(
+        replace,
+        value => !value.match('^[$][{].*.}$')
+    )
+}
+
+function toConstantName(value) {
+    const start = value.indexOf('{') //?
+    const end = value.indexOf('[') //?
+
+    return value.substring(start + 1, end) //?
+}
+
+function toInjectGeneratedValues(replace, generateConstants, i) {
+    let entries = Object.entries(replace || {})
+    if (entries.length <= 0) {
+        return {}
+    }
+
+    return entries
+        .map(([key, value]) => {
+            const position = toArrayPosition(value)
+            const constantName = toConstantName(value)
+
+            const constant = findGeneratedConstant(generateConstants, constantName, position === 'N' ? i : Number.parseInt(position))
+            if (!constant) {
+                return {}
+            }
+            return {
+                [key]: constant
+            }
+        })
+        .reduce((a, b) => {
+            return {...a, ...b}
+        })
+}
+
 function toInteractions(input, numOfInteractions) {
     const interactions = []
 
     for (let i = 1; i < numOfInteractions + 1; i++) {
-        const interactionReplaceRule = toInteractionReplaceRule(input.interactionReplaceRules, i, numOfInteractions)
+        const replaceRule = findReplaceRule(input.interactionReplaceRules, i, numOfInteractions)
 
         input.generateForEach = [
             ...(input.generateForEach ? input.generateForEach : []),
-            ...(interactionReplaceRule.generateForEach ? interactionReplaceRule.generateForEach : [])
+            ...(replaceRule.generateForEach ? replaceRule.generateForEach : [])
         ]
 
         input.generateAlways = [
             ...(input.generateAlways ? input.generateAlways : []),
-            ...(interactionReplaceRule.generateAlways ? interactionReplaceRule.generateAlways : [])
+            ...(replaceRule.generateAlways ? replaceRule.generateAlways : [])
         ]
 
         const generated = utils.generateReplace(input.generateForEach, input.replace)
 
+        const resolvedReplace = toInjectGeneratedValues(
+            toReplaceEntriesToInject(replaceRule.replace),
+            input?.scenarioReplaceRule?.generateConstants,
+            i
+        )
+
         input.replace = {
             ...input.replace,
             ...generated,
-            ...interactionReplaceRule?.replace
+            ...toReplaceEntriesToNotInject(replaceRule.replace),
+            ...resolvedReplace
         }
 
         interactions.push(toInteraction(input))
@@ -193,13 +290,12 @@ function toGenerateAlways(inputGenerateAlways, interactionGenerateAlways) {
     ]
 }
 
+function toScenario(input, globalReplace, replaceRule = {}) {
+    replaceRule.generateConstants = toGenerateConstants(replaceRule.generateConstants || [])
 
-function toScenario(input, globalReplace) {
     return input.interactions
         .map(interaction => {
             const interactionTemplate = toInteractionTemplate(interaction)
-
-            const numOfInteractions = interaction.numOfInteractions || 1
 
             return toInteractions(
                 {
@@ -207,7 +303,8 @@ function toScenario(input, globalReplace) {
                         ...globalReplace,
                         ...interaction?.replace
                     },
-                    interactionReplaceRules: interaction.interactionReplaceRules,
+                    interactionReplaceRules: interaction.replaceRules,
+                    scenarioReplaceRule: replaceRule,
                     technology: toTechnology(interaction.technology),
                     generateForEach: interaction.generateForEach || [],
                     generateAlways: toGenerateAlways(input.generateAlways, interaction.generateAlways),
@@ -223,17 +320,41 @@ function toScenario(input, globalReplace) {
                         ...toResponse(interactionTemplate.response)
                     }
                 },
-                numOfInteractions
+                interaction.numOfInteractions || 1
             )
+        })
+}
+
+function toGenerateConstants(generateConstants) {
+    return generateConstants
+        .map(constant => {
+            return {
+                ...constant,
+                generated: typeGenerators.toRandomFromType(
+                    constant.type,
+                    constant.min,
+                    constant.max,
+                    constant.numberOf
+                )
+            }
         })
 }
 
 export default {
     createScenarios: (input, numOfScenarios = 1) => {
-        const scenarios = []
+        if (!input?.interactions?.length) {
+            return []
+        }
 
+        const scenarios = []
         for (let i = 0; i < numOfScenarios; i++) {
-            scenarios.push(toScenario(input, utils.toReplace(input.generateForEach, input.replace)))
+            scenarios.push(
+                toScenario(
+                    input,
+                    utils.toReplace(input.generateForEach, input.replace),
+                    findReplaceRule(input.replaceRules, i + 1, numOfScenarios)
+                )
+            )
         }
 
         return utils.flattenInputArray(scenarios)
