@@ -189,7 +189,7 @@ function toInjectGeneratedValues(replace, generateConstants, i) {
             const position = toArrayPosition(value)
             const constantName = toConstantName(value)
 
-            const constant = findGeneratedConstant(generateConstants, constantName, position === 'N' ? i : Number.parseInt(position))
+            const constant = findGeneratedConstant(generateConstants, constantName, position === 'N' || position === 'n' ? i : Number.parseInt(position))
             if (!constant) {
                 return {}
             }
