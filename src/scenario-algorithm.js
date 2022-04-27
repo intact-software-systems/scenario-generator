@@ -334,7 +334,8 @@ function toGenerateConstants(generateConstants) {
                     constant.type,
                     constant.min,
                     constant.max,
-                    constant.numberOf
+                    constant.numberOf || 1,
+                    constant?.decimals
                 )
             }
         })

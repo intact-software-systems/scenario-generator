@@ -101,8 +101,16 @@ function toRandomDate(min, max) {
         .slice(0, 10)
 }
 
-function toRandomFloat(min, max) {
-    return Math.random() * (max - min) + min
+function toRandomFloat(min, max, decimals) {
+    let num = Math.random() * (max - min) + min
+    return roundToDecimals(num, decimals || 2)
+}
+
+function roundToDecimals(num, decimals) {
+    if (decimals < 0) {
+        decimals = 0
+    }
+    return +(Math.round(num + 'e+' + decimals) + 'e-' + decimals)
 }
 
 function toRandomIban(countryCode, technicalOrgNum) {
@@ -121,10 +129,10 @@ function toRandomIntegers(min, max, numberOf) {
         .map(() => toRandomInteger(min, max))
 }
 
-function toRandomFloats(min, max, numberOf) {
+function toRandomFloats(min, max, numberOf, decimals) {
     return new Array(numberOf)
         .fill(0)
-        .map(() => toRandomFloat(min, max))
+        .map(() => toRandomFloat(min, max, decimals))
 }
 
 function toRandomDates(min, max, numberOf) {
@@ -150,8 +158,8 @@ export default {
     toRandomInteger: (min, max) => {
         return toRandomInteger(min, max)
     },
-    toRandomFloat: (min, max) => {
-        return toRandomFloat(min, max)
+    toRandomFloat: (min, max, decimals) => {
+        return toRandomFloat(min, max, decimals)
     },
     toRandomDate: (min, max) => {
         return toRandomDate(min, max)
@@ -170,8 +178,8 @@ export default {
     toRandomIntegers: (min, max, numberOf) => {
         return toRandomIntegers(min, max, numberOf)
     },
-    toRandomFloats: (min, max, numberOf) => {
-        return toRandomFloats(min, max, numberOf)
+    toRandomFloats: (min, max, numberOf, decimals) => {
+        return toRandomFloats(min, max, numberOf, decimals)
     },
     toRandomDates: (min, max, numberOf) => {
         return toRandomDates(min, max, numberOf)
@@ -179,7 +187,7 @@ export default {
     toUuids: numberOf => {
         return toUuids(numberOf)
     },
-    toRandomFromType: (type, min, max, numberOf) => {
+    toRandomFromType: (type, min, max, numberOf, decimals) => {
         switch (type) {
             case 'iban':
                 return toRandomIbans('NO', toRandomTechnicalOrgNum(), numberOf)
@@ -189,7 +197,7 @@ export default {
             case 'float':
             case 'floating':
             case 'floatingPoint':
-                return toRandomFloats(min, max, numberOf)
+                return toRandomFloats(min, max, numberOf, decimals)
             case 'date':
                 return toRandomDates(min, max, numberOf)
             case 'uuid':
