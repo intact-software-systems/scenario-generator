@@ -22,7 +22,8 @@
   "homepage": "https://github.com/intact-software-systems/scenario-generator#readme",
   "scripts": {
     "test": "jest test/",
-    "start": "node scenario-generate.js --config test-data/recipe.json",
+    "start": "node scenario-generate.js --config recipe.json -w ./test-data",
+    "start-without-working-dir": "node scenario-generate.js --config test-data/recipe.json",
     "start-flatten": "node scenario-flatten.js --scenario scenario.json"
   },
   "dependencies": {

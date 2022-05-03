@@ -125,7 +125,16 @@ function inputOverridesToJson(input) {
     return resultJson
 }
 
+
+let workingDirectory = '.';
+
+function toPath(name) {
+    return workingDirectory + "/" + name
+}
+
 export default {
+    setWorkingDirectory: dir => workingDirectory = dir || '.',
+
     saveToFile: (fileName, data) => {
         writeFile(fileName, JSON.stringify(data, null, 2), 'utf8', (err) => {
             if (err) {
@@ -133,8 +142,9 @@ export default {
             }
         })
     },
-    openFile: filename => {
-        return JSON.parse(readFileSync(filename))
+
+    openFile: fileName => {
+        return JSON.parse(readFileSync(toPath(fileName)))
     },
 
     toReplace: (generate, replace) => {
