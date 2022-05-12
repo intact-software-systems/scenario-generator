@@ -1,6 +1,6 @@
 {
   "name": "scenario-generator",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "From input recipes generate json file containing HTTP requests and responses",
   "type": "module",
   "author": {
