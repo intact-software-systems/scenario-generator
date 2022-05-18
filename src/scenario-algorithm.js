@@ -297,6 +297,11 @@ function toScenario(input, globalReplace, replaceRule = {}) {
         .map(interaction => {
             const interactionTemplate = toInteractionTemplate(interaction)
 
+            if(interactionTemplate === undefined || interactionTemplate.request === undefined) {
+                console.log(interaction)
+                throw new Error("Cannot find interaction template")
+            }
+
             return toInteractions(
                 {
                     replace: {
