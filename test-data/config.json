@@ -54,7 +54,7 @@
       "templateFile": "./templates/create-another-resource-template.json",
       "technology": "HTTP",
       "replace": {
-        "twigs": "humpdy"
+        "twigs": "humpty"
       },
       "generateForEach": [
         "uuid",
