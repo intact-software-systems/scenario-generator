@@ -44,11 +44,11 @@ function findReplaceRule(replaceRules, i, numOf) {
     }
 
     return entries
-        .filter(([key, value]) => {
+        .filter(([key, _value]) => {
             const range = toRuleRange(key, numOf)
             return range[0] <= i && range[1] >= i
         })
-        .map(([key, value]) => {
+        .map(([_key, value]) => {
             return value
         })[0] || {}
 }
@@ -130,10 +130,10 @@ function findGeneratedConstant(generateConstants, key, i) {
 }
 
 function toArrayPosition(value) {
-    const start = value.indexOf('[') //?
-    const end = value.indexOf(']') //?
+    const start = value.indexOf('[')
+    const end = value.indexOf(']')
 
-    return value.substring(start + 1, end) //?
+    return value.substring(start + 1, end)
 }
 
 function toFilteredObject(replace, matcher) {
@@ -143,7 +143,7 @@ function toFilteredObject(replace, matcher) {
     }
 
     let filtered = entries
-        .filter(([key, value]) => matcher(value))
+        .filter(([_key, value]) => matcher(value))
         .map(([key, value]) => {
             return {
                 [key]: value
@@ -172,10 +172,10 @@ function toReplaceEntriesToNotInject(replace) {
 }
 
 function toConstantName(value) {
-    const start = value.indexOf('{') //?
-    const end = value.indexOf('[') //?
+    const start = value.indexOf('{')
+    const end = value.indexOf('[')
 
-    return value.substring(start + 1, end) //?
+    return value.substring(start + 1, end)
 }
 
 function toInjectGeneratedValues(replace, generateConstants, i) {
