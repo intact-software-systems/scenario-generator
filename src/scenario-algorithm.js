@@ -325,7 +325,7 @@ function toScenario(input, globalReplace, replaceRule = {}) {
                         ...toResponse(interactionTemplate.response)
                     }
                 },
-                interaction.numOfInteractions || 1
+                interaction.numOfInteractions ? Number.parseInt(interaction.numOfInteractions) : 1
             )
         })
 }
