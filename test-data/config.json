@@ -10,11 +10,11 @@
   "generateForEach": [
     "amount"
   ],
-  "numOfScenarios": "2",
+  "numOfScenarios": 2,
   "interactions": [
     {
       "templateFile": "./templates/create-resource-template.json",
-      "numOfInteractions": "10",
+      "numOfInteractions": 10,
       "technology": "HTTP",
       "replace": {
         "branchCondition": "Blossom",

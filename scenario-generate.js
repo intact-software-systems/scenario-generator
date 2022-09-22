@@ -34,7 +34,7 @@ input.replace = {
     ...(utils.inputOverridesToJson(program.opts().override))
 }
 
-const requests = scenarios.createScenarios(input, input.numOfScenarios || 1)
+const requests = scenarios.createScenarios(input, input.numOfScenarios ? Number.parseInt(input.numOfScenarios) : 1)
 
 const fileName = input.outputFile || 'scenario.json'
 utils.saveToFile(fileName, requests)

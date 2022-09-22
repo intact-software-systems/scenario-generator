@@ -202,7 +202,7 @@ function toInjectGeneratedValues(replace, generateConstants, i) {
         })
 }
 
-function toInteractions(input, numOfInteractions) {
+function toInteractions(input, numOfInteractions = 1) {
     const interactions = []
 
     for (let i = 1; i < numOfInteractions + 1; i++) {
